@@ -1,0 +1,1 @@
+open("myfile.c", "w").write("Hello world!") # "Hello world!
