@@ -27,22 +27,28 @@ async function setWebviewHtml(panel: vscode.WebviewPanel, context: vscode.Extens
 
 function handleWebviewMessages(panel: vscode.WebviewPanel, context: vscode.ExtensionContext) {
     panel.webview.onDidReceiveMessage(
-        async message => {
-            switch (message.type) {
-                case 'buttonClicked':
-                    vscode.window.showInformationMessage(message.text);
-                    break;
-                case 'writeToFile':
-                    const filePath = vscode.Uri.joinPath(context.extensionUri, 'myFile.txt');
-                    const writeData = new TextEncoder().encode('Hello, file!');
-                    await vscode.workspace.fs.writeFile(filePath, writeData);
-                    vscode.window.showInformationMessage('Written to file!');
-                    break;
-            }
-        },
-        undefined,
-        context.subscriptions
-    );
+		async message => {
+			switch (message.type) {
+				case 'buttonClicked':
+					vscode.window.showInformationMessage(message.text);
+					break;
+				case 'writeToFile':
+					const filePath = vscode.Uri.joinPath(context.extensionUri, 'myFile.txt');
+					const writeData = new TextEncoder().encode('Hello, file!');
+					await vscode.workspace.fs.writeFile(filePath, writeData);
+					vscode.window.showInformationMessage('Written to file!');
+					break;
+				case 'saveConfig':
+					const configFilePath = vscode.Uri.joinPath(context.extensionUri, 'config.json');
+					const configData = new TextEncoder().encode(JSON.stringify(message.data));
+					await vscode.workspace.fs.writeFile(configFilePath, configData);
+					vscode.window.showInformationMessage('Configuration saved!');
+					break;
+			}
+		},
+		undefined,
+		context.subscriptions
+	);
 }
 
 export function activate(context: vscode.ExtensionContext) {

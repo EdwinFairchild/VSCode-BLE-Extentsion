@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Interactive Webview</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2em;
+            font-family: Arial, sans-serif;
+        }
+        button {
+            margin: 1em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Interactive Webview</h1>
+
+    <button id="myButton">Click me!</button>
+    <label>
+        <input type="checkbox" id="myCheckbox">
+        Check me!
+    </label>
+
+    <script>
+        const vscode = acquireVsCodeApi();
+
+        document.getElementById('myButton').addEventListener('click', () => {
+        vscode.postMessage({
+        type: 'writeToFile'
+    });
+    });
+
+        document.getElementById('myCheckbox').addEventListener('change', (event) => {
+            if (event.target.checked) {
+                vscode.postMessage({
+                    type: 'checkboxChanged',
+                    text: 'Checkbox checked!'
+                });
+            } else {
+                vscode.postMessage({
+                    type: 'checkboxChanged',
+                    text: 'Checkbox unchecked!'
+                });
+            }
+        });
+    </script>
+</body>
+</html>

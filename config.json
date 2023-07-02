@@ -1,0 +1,64 @@
+{
+    "services": [
+        {
+            "name": "11111",
+            "characteristics": [
+                {
+                    "name": "222222",
+                    "descriptors": [
+                        {
+                            "name": "333333"
+                        }
+                    ]
+                },
+                {
+                    "name": "44444",
+                    "descriptors": [
+                        {
+                            "name": "333333"
+                        }
+                    ]
+                },
+                {
+                    "name": "666666",
+                    "descriptors": [
+                        {
+                            "name": "333333"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "55555",
+            "characteristics": [
+                {
+                    "name": "222222",
+                    "descriptors": [
+                        {
+                            "name": "333333"
+                        }
+                    ]
+                },
+                {
+                    "name": "44444",
+                    "descriptors": [
+                        {
+                            "name": "333333"
+                        }
+                    ]
+                },
+                {
+                    "name": "666666",
+                    "descriptors": [
+                        {
+                            "name": "333333"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "enableNotifications": true,
+    "setPrivacyFlags": true
+}

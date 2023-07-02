@@ -2,51 +2,185 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Interactive Webview</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 2em;
-            font-family: Arial, sans-serif;
-        }
-        button {
-            margin: 1em;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaxBluGen Configuration</title>
 </head>
 <body>
-    <h1>Interactive Webview</h1>
+    <h1>MaxBluGen Configuration</h1>
+    <form id="configForm">
+        <div id="servicesContainer"></div>
 
-    <button id="myButton">Click me!</button>
-    <label>
-        <input type="checkbox" id="myCheckbox">
-        Check me!
-    </label>
+        <input type="button" value="Add Service" id="addServiceButton"><br><br>
+
+        <input type="checkbox" id="enableNotifications" name="enableNotifications">
+        <label for="enableNotifications">Enable Notifications</label><br><br>
+        <input type="checkbox" id="setPrivacyFlags" name="setPrivacyFlags">
+        <label for="setPrivacyFlags">Set Privacy Flags</label><br><br>
+
+        <input type="button" value="Save" id="saveButton">
+    </form>
 
     <script>
         const vscode = acquireVsCodeApi();
 
-        document.getElementById('myButton').addEventListener('click', () => {
-        vscode.postMessage({
-        type: 'writeToFile'
-    });
-    });
+        let serviceCount = 0;
+        let characteristicCount = 0;
+        let descriptorCount = 0;
 
-        document.getElementById('myCheckbox').addEventListener('change', (event) => {
-            if (event.target.checked) {
-                vscode.postMessage({
-                    type: 'checkboxChanged',
-                    text: 'Checkbox checked!'
-                });
-            } else {
-                vscode.postMessage({
-                    type: 'checkboxChanged',
-                    text: 'Checkbox unchecked!'
-                });
+        function addService() {
+            serviceCount++;
+            const serviceId = `service${serviceCount}`;
+
+            const serviceContainer = document.createElement('div');
+            serviceContainer.id = serviceId;
+            serviceContainer.classList.add('serviceContainer');
+
+            const serviceLabel = document.createElement('label');
+            serviceLabel.htmlFor = `${serviceId}Name`;
+            serviceLabel.textContent = `Service ${serviceCount}:`;
+            serviceContainer.appendChild(serviceLabel);
+
+            const serviceNameInput = document.createElement('input');
+            serviceNameInput.type = 'text';
+            serviceNameInput.id = `${serviceId}Name`;
+            serviceNameInput.name = `${serviceId}Name`;
+            serviceContainer.appendChild(serviceNameInput);
+
+            const characteristicsContainer = document.createElement('div');
+            characteristicsContainer.id = `${serviceId}Characteristics`;
+            characteristicsContainer.classList.add('characteristicsContainer');
+            serviceContainer.appendChild(characteristicsContainer);
+
+            const addCharacteristicButton = document.createElement('input');
+            addCharacteristicButton.type = 'button';
+            addCharacteristicButton.value = 'Add Characteristic';
+            addCharacteristicButton.addEventListener('click', () => {
+                addCharacteristic(serviceId);
+            });
+            serviceContainer.appendChild(addCharacteristicButton);
+
+            document.getElementById('servicesContainer').appendChild(serviceContainer);
+        }
+
+        function addCharacteristic(serviceId) {
+            characteristicCount++;
+            const characteristicId = `characteristic${characteristicCount}`;
+
+            const characteristicContainer = document.createElement('div');
+            characteristicContainer.id = characteristicId;
+            characteristicContainer.classList.add('characteristicContainer');
+
+            const characteristicLabel = document.createElement('label');
+            characteristicLabel.htmlFor = `${characteristicId}Name`;
+            characteristicLabel.textContent = `Characteristic ${characteristicCount}:`;
+            characteristicContainer.appendChild(characteristicLabel);
+
+            const characteristicNameInput = document.createElement('input');
+            characteristicNameInput.type = 'text';
+            characteristicNameInput.id = `${characteristicId}Name`;
+            characteristicNameInput.name = `${characteristicId}Name`;
+            characteristicContainer.appendChild(characteristicNameInput);
+
+            const descriptorsContainer = document.createElement('div');
+            descriptorsContainer.id = `${characteristicId}Descriptors`;
+            descriptorsContainer.classList.add('descriptorsContainer');
+            characteristicContainer.appendChild(descriptorsContainer);
+
+            const addDescriptorButton = document.createElement('input');
+            addDescriptorButton.type = 'button';
+            addDescriptorButton.value = 'Add Descriptor';
+            addDescriptorButton.addEventListener('click', () => {
+                addDescriptor(characteristicId);
+            });
+            characteristicContainer.appendChild(addDescriptorButton);
+
+			document.getElementById(`${serviceId}Characteristics`).appendChild(characteristicContainer);
+        }
+
+        function addDescriptor(characteristicId) {
+			descriptorCount++;
+			const descriptorId = `descriptor${descriptorCount}`;
+
+			const descriptorLabel = document.createElement('label');
+			descriptorLabel.htmlFor = `${descriptorId}Name`;
+			descriptorLabel.textContent = `Descriptor ${descriptorCount}:`;
+
+			const descriptorNameInput = document.createElement('input');
+			descriptorNameInput.type = 'text';
+			descriptorNameInput.id = `${descriptorId}Name`;
+			descriptorNameInput.name = `${descriptorId}Name`;
+
+			const descriptorContainer = document.createElement('div');
+			descriptorContainer.id = descriptorId;
+			descriptorContainer.classList.add('descriptorContainer');
+			descriptorContainer.appendChild(descriptorLabel);
+			descriptorContainer.appendChild(descriptorNameInput);
+
+			document.getElementById(`${characteristicId}Descriptors`).appendChild(descriptorContainer);
+		}
+
+        document.getElementById('addServiceButton').addEventListener('click', () => {
+            addService();
+        });
+
+        document.getElementById('saveButton').addEventListener('click', () => {
+            const data = {
+                services: [],
+                enableNotifications: document.getElementById('enableNotifications').checked,
+                setPrivacyFlags: document.getElementById('setPrivacyFlags').checked
+            };
+
+            for (let i = 1; i <= serviceCount; i++) {
+                const serviceId = `service${i}`;
+                const serviceName = document.getElementById(`${serviceId}Name`).value;
+                if (serviceName) {
+                    const serviceData = {
+                        name: serviceName,
+                        characteristics: []
+                    };
+
+                    for (let j = 1; j <= characteristicCount; j++) {
+                        const characteristicId = `characteristic${j}`;
+                        const characteristicName = document.getElementById(`${characteristicId}Name`)?.value;
+                        if (characteristicName) {
+                            const characteristicData = {
+                                name: characteristicName,
+                                descriptors: []
+                            };
+
+                            for (let k = 1; k <= descriptorCount; k++) {
+                                const descriptorId = `descriptor${k}`;
+                                const descriptorName = document.getElementById(`${descriptorId}Name`)?.value;
+                                if (descriptorName) {
+                                    const descriptorData = {
+                                        name: descriptorName
+                                    };
+                                    characteristicData.descriptors.push(descriptorData);
+                                }
+                            }
+
+                            serviceData.characteristics.push(characteristicData);
+                        }
+                    }
+
+                    data.services.push(serviceData);
+                }
             }
+
+            vscode.postMessage({
+                type: 'saveConfig',
+                data: data
+            });
         });
     </script>
+
+    <style>
+        .serviceContainer, .characteristicContainer, .descriptorContainer {
+            margin-bottom: 10px;
+        }
+        .characteristicsContainer, .descriptorsContainer {
+            margin-left: 20px;
+        }
+    </style>
 </body>
 </html>
